@@ -341,6 +341,20 @@ vrrp_conf_lecture_fichier(struct vrrp_vr * vr, FILE * stream)
 				vr->monitoredCircuitsClearErrorsCount = atoi(arg);
 				optok = 1;
 			}
+			if (!strcmp(option, "version")) {
+				vr->version = atoi(arg);
+				if ((vr->version < 2) || (vr->version > 3)) {
+					syslog(LOG_ERR,
+					    "bad value in the configuration file for version option: %s",
+					    arg);
+					exit(-1);
+				}
+				optok = 1;
+			}
+			if (!strcmp(option, "interval")) {
+				vr->adv_int = atoi(arg);
+				optok = 1;
+			}
 			if (! optok)
 				syslog(LOG_ERR, "option '%s' unknown on configuration file, ignoring it", option);
 		}

@@ -48,7 +48,10 @@ vrrp_main_pre_init(struct vrrp_vr * vr)
 {
 	bzero(vr, sizeof(*vr));
 	vr->priority = 100;
-	vr->adv_int = VRRP_DEFAULT_ADV_INT;
+	if (vr->version == VRRP2_VERSION)
+		vr->adv_int = VRRP2_DEFAULT_ADV_INT;
+	else
+		vr->adv_int = VRRP3_DEFAULT_ADV_INT;
 	vr->preempt_mode = 1;
 	vr->fault = 0;
 	vr->useMonitoredCircuits = 1;

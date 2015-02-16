@@ -100,7 +100,7 @@ vrrp_network_vrrphdr_len(struct vrrp_vr * vr)
 {
 	u_int           len = sizeof(struct vrrp_hdr);
 
-	len += (vr->cnt_ip << 2) + VRRP_AUTH_DATA_LEN;
+	len += (vr->cnt_ip << 2);
 
 	return len;
 }
@@ -141,24 +141,21 @@ vrrp_network_init_vrrphdr(char *buffer, struct vrrp_vr * vr)
 {
 	struct vrrp_hdr *vp;
 	struct in_addr *addr;
-	char           *password;
 	int             cpt;
 
 	vp = (struct vrrp_hdr *)buffer;
-	vp->vrrp_v = VRRP_PROTOCOL_VERSION;
+	vp->vrrp_v = vr->version;
 	vp->vrrp_t = VRRP_PROTOCOL_ADVERTISEMENT;
 	vp->vr_id = vr->vr_id;
 	vp->priority = vr->priority;
 	vp->cnt_ip = vr->cnt_ip;
-	vp->auth_type = vr->auth_type;
-	vp->adv_int = vr->adv_int;
+	if (vr->version == VRRP2_VERSION)
+		vp->adv_int.v2.adv_int = vr->adv_int;
+	else
+		vp->adv_int.v3.adv_int = htons(vr->adv_int);
 	addr = (struct in_addr *) & buffer[sizeof(struct vrrp_hdr)];
 	for (cpt = 0; cpt < vr->cnt_ip; cpt++) {
 		addr[cpt].s_addr = vr->vr_ip[cpt].addr.s_addr;
-	}
-	if (vr->auth_type == 1) {
-		password = (char *)&addr[vr->cnt_ip];
-		strncpy(password, vr->password, 8);
 	}
 	vp->csum = vrrp_misc_compute_checksum((u_short *) vp, vrrp_network_vrrphdr_len(vr));
 

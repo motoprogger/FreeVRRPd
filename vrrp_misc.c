@@ -285,7 +285,7 @@ vrrp_misc_calcul_tmrelease(struct timeval * timer, struct timeval * interval)
 u_short 
 vrrp_misc_vphdr_len(struct vrrp_hdr * vph)
 {
-	return (sizeof(struct vrrp_hdr) + (vph->cnt_ip << 2) + VRRP_AUTH_DATA_LEN);
+	return (sizeof(struct vrrp_hdr) + (vph->cnt_ip << 2));
 }
 
 char 
@@ -308,8 +308,10 @@ vrrp_misc_check_vrrp_packet(struct vrrp_vr * vr, char *packet, ssize_t packetSiz
 		syslog(LOG_ERR, "ip ttl of vrrp packet isn't set to 255. Packet is discarded !");
 		return -1;
 	}
-	if (vph->vrrp_v != VRRP_PROTOCOL_VERSION) {
-		syslog(LOG_ERR, "vrrp version of vrrp packet is not valid or compatible with this daemon. Packet is discarded !");
+	if (vph->vrrp_v != vr->version) {
+		syslog(LOG_ERR, "vrrp version of vrrp packet (%d) is not "
+		    "valid or compatible with this daemon (%d). Packet is discarded !",
+		    vph->vrrp_v, vr->version);
 		return -1;
 	}
 	if (packetSize < sizeof(struct ip) + vrrp_misc_vphdr_len(vph)) {
@@ -347,19 +349,32 @@ vrrp_misc_check_vrrp_packet(struct vrrp_vr * vr, char *packet, ssize_t packetSiz
 			return -1;
 		}
 	}
-	if (vph->adv_int != vr->adv_int) {
-		syslog(LOG_ERR, "the advertisement interval set on received vrrp packet isn't same localy. Packet is discarded !");
-		return -1;
+
+	if (vr->version == VRRP2_VERSION) {
+		if (vph->adv_int.v2.adv_int != vr->adv_int) {
+			syslog(LOG_ERR, "the advertisement interval set on received vrrp packet isn't same localy. Packet is discarded !");
+			return -1;
+		}
+	 } else {
+		vph->adv_int.v3.adv_int = ntohs(vph->adv_int.v3.adv_int);
+		if (vph->adv_int.v3.adv_int != vr->adv_int) {
+			syslog(LOG_ERR, "the advertisement interval set on received vrrp packet (%d) isn't same localy (%d). Packet is discarded !",
+			    vph->adv_int.v3.adv_int, vr->adv_int);
+			return -1;
+		}
 	}
+
+	if (vr->version == VRRP2_VERSION){
 #ifdef ENABLE_VRRP_AH
-	/* checking function */
-	vrrp_ah_check_ahhdr(packet,vr);
+		/* checking function */
+		vrrp_ah_check_ahhdr(packet,vr);
 #endif
-	/* Verification of Authentification */
-	password = (char *)&ip_addrs[vph->cnt_ip];
-	if (vr->auth_type == 1 && strncmp(vr->password, password, 8)) {
-		syslog(LOG_ERR, "authentification incorrect in a received vrrp packet. Packet is discarded !");
-		return -1;
+		/* Verification of Authentification */
+		password = (char *)&ip_addrs[vph->cnt_ip];
+		if (vr->auth_type == 1 && strncmp(vr->password, password, 8)) {
+			syslog(LOG_ERR, "authentification incorrect in a received vrrp packet. Packet is discarded !");
+			return -1;
+		}
 	}
 	return 0;
 }

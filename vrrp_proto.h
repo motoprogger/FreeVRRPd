@@ -50,7 +50,23 @@
 #endif
 #include "vrrp_define.h"
 
-/* RFC 2338 vrrp header */
+struct v2_adv_int {
+	u_int auth_type:8;
+	u_int adv_int:8;
+} __packed;
+
+struct v3_adv_int {
+#if BYTE_ORDER == LITTLE_ENDIAN
+	u_int adv_int:12;
+	u_int rsvd:4;
+#endif /* LITTLE_ENDIAN */
+#if BYTE_ORDER == BIG_ENDIAN
+	u_int rsvd:4;
+	u_int adv_int:12;
+#endif /* BIG_ENDIAN */
+} __packed;
+
+/* VRRP header, both RFC 2338 and RFC 5798 */
 struct vrrp_hdr {
 #if BYTE_ORDER == LITTLE_ENDIAN
 	u_int           vrrp_t:4, vrrp_v:4;
@@ -61,14 +77,11 @@ struct vrrp_hdr {
 	u_char          vr_id;
 	u_char          priority;
 	u_char          cnt_ip;
-	u_char          auth_type;
-	u_char          adv_int;
+	union {
+		struct v2_adv_int v2;
+		struct v3_adv_int v3;
+	} adv_int;
 	u_short         csum;
-	/* Some IP adresses, number are not defined */
-	/*
-	 * After IP adresses, we can found Authentification Data 1 & 2 (total
-	 * of 8 bytes)
-	 */
 };
 
 struct vrrp_if {
@@ -84,7 +97,7 @@ struct vrrp_if {
 	struct vrrp_ethaddr_list *p, *d;
 	struct vrrp_vlan_list *vlanp, *vland;
 	int		carrier_timeout;
-};
+} __packed;
 
 struct vrrp_vip {
 	struct in_addr  addr;
@@ -103,6 +116,7 @@ struct vrrp_timer {
  * draft-ietf-vrrp-spec-v2-05.txt
  */
 struct vrrp_vr {
+	u_char          version;
 	u_char          vr_id;
 	u_char          priority;
 	int             sd;
@@ -111,7 +125,7 @@ struct vrrp_vr {
 	u_char          cnt_ip;
 	struct vrrp_vip *vr_ip;
 	u_int          *vr_netmask;
-	u_char          adv_int;
+	u_int           adv_int; /* seconds in V2, 100ths of seconds in V3 */
 	u_int           master_down_int;
 	u_int           skew_time;
 	struct vrrp_timer tm;
