@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001,2002 Sebastien Petit <spe@bsdfr.org>
+ * Copyright (c) 2020-2021 Dmitriy Kryuk <kryukdmitriy@rambler.ru>
  *
  * Redistribution and use in source forms, with and without modification,
  * are permitted provided that the following conditions are met:
@@ -29,33 +29,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: vrrp_interface.h,v 1.4 2004/03/06 18:25:54 spe Exp $
+ * $Id$
  */
 
 #include <sys/types.h>
-#include <netinet/in.h>
 #include <sys/socket.h>
-#include <sys/sockio.h>
-#include <sys/ioctl.h>
-#include <net/if.h>
-#ifdef __FreeBSD__
-#include <net/ethernet.h>
-#endif
-#ifdef __NetBSD__
-#include <net/if_ether.h>
-#endif
-#include <arpa/inet.h>
-#include <errno.h>
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
 #include <syslog.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <net/if.h>
-#include <net/ethernet.h>
-#include <net/if_bridgevar.h>
 #include "vrrp_define.h"
 #include "vrrp_proto.h"
 #include "vrrp_functions.h"
-#include "vrrp_vlanlist.h"
+

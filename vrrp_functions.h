@@ -43,22 +43,6 @@ char            vrrp_state_check_priority(struct vrrp_hdr *, struct vrrp_vr *, s
 char            vrrp_state_master(struct vrrp_vr *);
 char            vrrp_state_backup(struct vrrp_vr *);
 
-/* vrrp_interface.c functions */
-void            vrrp_interface_owner_verify(struct vrrp_vr *);
-char            vrrp_interface_mac_set(char *, struct ether_addr *);
-int             vrrp_interface_all_ethaddr_set(struct vrrp_vr *, struct ether_addr *);
-char            vrrp_interface_ipaddr_set(char *, struct in_addr, in_addr_t netmask);
-char            vrrp_interface_ipaddr_delete(char *, struct in_addr, int);
-char            vrrp_interface_vripaddr_set(struct vrrp_vr *);
-char            vrrp_interface_vripaddr_delete(struct vrrp_vr *);
-char            vrrp_interface_down(char *);
-char            vrrp_interface_up(char *);
-char            vrrp_interface_promiscuous(char *);
-char		vrrp_interface_set_flags(char *, int);
-char		vrrp_interface_bridge_create(struct vrrp_vr *);
-int		vrrp_interface_bridge_destroy(int, char *);
-char		vrrp_interface_bridge_addmember(int, char *, char *);
-
 /* vrrp_network.c functions */
 char            vrrp_network_open_socket(struct vrrp_vr *);
 ssize_t         vrrp_network_send_packet(char *, int, int, int);
@@ -124,8 +108,6 @@ void            *vrrp_thread_launch_vrrprouter(void *);
 char            vrrp_thread_initialize(void);
 char            vrrp_thread_create_vrid(struct vrrp_vr *);
 
-/* vrrp_netgraph.c functions */
-int		vrrp_netgraph_bridge_create(char *);
-int		vrrp_netgraph_create_virtualiface(struct vrrp_vr *);
-int		vrrp_netgraph_shutdown(int, char *);
-int		vrrp_netgraph_shutdown_allnodes(void);
+/* vrrp_script functions */
+int		vrrp_script_run(struct vrrp_vr * vr, const char* verb);
+

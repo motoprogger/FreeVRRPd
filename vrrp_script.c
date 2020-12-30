@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001,2002 Sebastien Petit <spe@bsdfr.org>
+ * Copyright (c) 2020-2021 Dmitriy Kryuk <kryukdmitriy@rambler.ru>
  *
  * Redistribution and use in source forms, with and without modification,
  * are permitted provided that the following conditions are met:
@@ -29,35 +29,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: vrrp_define.h,v 1.6 2004/03/30 23:45:28 rival Exp $
+ * $Id$
  */
 
-/*
- * The virtual router can have three different states set on vrrp_vr struct
- * RFC2338-6.4.1 to RFC2338-6.4.3
- */
-#define VRRP_STATE_INITIALIZE 0
-#define VRRP_STATE_MASTER 1
-#define VRRP_STATE_BACKUP 2
-#define VRRP_PRIORITY_DEFAULT 100
-#define VRRP_PRIORITY_MASTER 255
-#define VRRP_AUTH_DATA_LEN 8
-#define VRRP_MULTICAST_IP "224.0.0.18"
-#define VRRP_MULTICAST_TTL 255
-#define VRRP_MULTICAST_DISABLE_LOOPBACK 0
-#define VRRP_PROTOCOL_VERSION 2
-#define VRRP_PROTOCOL_ADVERTISEMENT 1
-#define VRRP_INTERFACE_IPADDR_OWNER 1
-#define VRRP_USEC_COEFF 1000000
-#define VRRP_CONF_MAX_ARGS 255
-#define VRRP_DEFAULT_ADV_INT 1
-#define VRRP_DEFAULT_CARRIER_TIMEOUT 10
-#define VRRP_PROTOCOL_MAX_VRID 255
-#define VRRP_CONF_FILE_NAME "/usr/local/etc/freevrrpd.conf"
-#define VRRP_MONCIRCUIT_MONDELAY 1
-#define VRRP_MONCIRCUIT_MAX_ERRORS 5
-#define VRRP_MONCIRCUIT_CLEAR_ERRORS 3600
-#define VRRP_SCRIPT_VERB_STANDBY "standby"
-#define VRRP_SCRIPT_VERB_MASTER "master"
-#define IPPROTO_VRRP 112
-#define MAX_IP_ALIAS 255
+#include <stdlib.h>
+#include "vrrp_script.h"
+
+int
+vrrp_script_run(struct vrrp_vr * vr, const char* verb)
+{
+	syslog(LOG_INFO, "Would have call state_script with verb %s for interface %s\n", verb, vr->vr_if->if_name);
+	return 0;
+}
+

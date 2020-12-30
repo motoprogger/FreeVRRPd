@@ -63,7 +63,6 @@ void
 vrrp_main_post_init(struct vrrp_vr * vr, int firstime)
 {
 	int             size = MAX_IP_ALIAS;
-	int		rc;
 
 	vr->ethaddr.octet[0] = 0x00;
 	vr->ethaddr.octet[1] = 0x00;
@@ -98,27 +97,6 @@ vrrp_main_post_init(struct vrrp_vr * vr, int firstime)
 		exit(-1);
 	}
 
-	/* Setting real interface in promiscuous mode */
-	if (vrrp_interface_promiscuous(vr->vr_if->if_name) < 0) {
-		syslog(LOG_CRIT, "cannot set interface %s in promiscuous mode\n", vr->vr_if->if_name);
-		syslog(LOG_CRIT, "exiting...");
-		exit(-1);
-	}
-
-	rc = vrrp_netgraph_bridge_create(vr->vr_if->if_name);
-	if ((rc < 0) && (errno != EEXIST)) {
-		syslog(LOG_CRIT, "cannot create a bridge device: %s", strerror(errno));
-		syslog(LOG_CRIT, "aborting...");
-		exit(-1);
-	}
-	rc = vrrp_netgraph_create_virtualiface(vr);
-	if (rc < 0) {
-		syslog(LOG_CRIT, "cannot create a virtual interface via netgraph: %s\n", strerror(errno));
-		syslog(LOG_CRIT, "check that ng_socket, ng_ether, ng_eiface and ng_bridge are loaded\n");
-		exit(-1);
-	}
-
-	return;
 }
 
 void
@@ -233,10 +211,6 @@ main(int argc, char **argv)
 			return -1;
 		}
 	}
-	/*if (vrrp_netgraph_open(&ng_control_socket, &ng_data_socket) < 0) {
-		syslog(LOG_ERR, "cannot open netgraph control socket: %s", strerror(errno));
-		exit(-1);
-	}*/
 
 	/* Initialisation of struct vrrp_vr * adresses table */
 	bzero(&vr_ptr, sizeof(vr_ptr));
@@ -255,7 +229,6 @@ main(int argc, char **argv)
 			if (vrrp_list_initialize(vr, &vr->vr_if->ethaddr) < 0)
 				return -1;
 		}
-		vrrp_interface_owner_verify(vr);
 		if (vrrp_multicast_open_socket(vr) == -1)
 			return -1;
 		vrrp_main_print_struct(vr);

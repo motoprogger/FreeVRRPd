@@ -60,17 +60,7 @@ vrrp_state_set_master(struct vrrp_vr * vr)
 	vrrp_network_send_advertisement(vr);
 	vrrp_thread_mutex_lock();
 	vrrp_thread_mutex_lock_monitor();
-	if (vrrp_interface_vripaddr_set(vr) == -1) {
-		vrrp_thread_mutex_unlock_monitor();
-		vrrp_thread_mutex_unlock();
-		return -1;
-	}
-	if (vrrp_interface_up(vr->viface_name) < 0) {
-		vrrp_thread_mutex_unlock_monitor();
-		vrrp_thread_mutex_unlock();
-		return -1;
-	}
-
+	vrrp_script_run(vr, VRRP_SCRIPT_VERB_MASTER);
 	/* Some NICs will reset (eg: bge/em) and wait some seconds before becoming carrier again */
 	/* So we must wait for carrier */
 	if (vr->useMonitoredCircuits) {
@@ -109,13 +99,8 @@ vrrp_state_set_backup(struct vrrp_vr * vr)
 	int counter = 0;
 
 	vrrp_thread_mutex_lock();
-	vrrp_interface_vripaddr_delete(vr);
+	vrrp_script_run(vr, VRRP_SCRIPT_VERB_STANDBY);
 	vrrp_thread_mutex_lock_monitor();
-	if (vrrp_interface_down(vr->viface_name) < 0) {
-		vrrp_thread_mutex_unlock_monitor();
-		vrrp_thread_mutex_unlock();
-		return -1;
-	}
 
 	/* Some NICs will reset (eg: bge/em) and wait some seconds before becoming carrier again */
 	/* So we must wait for carrier */
