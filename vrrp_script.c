@@ -38,7 +38,8 @@
 int
 vrrp_script_run(struct vrrp_vr * vr, const char* verb)
 {
-	syslog(LOG_INFO, "Would have call state_script with verb %s for interface %s\n", verb, vr->vr_if->if_name);
+	if (vr->state_script)
+		syslog(LOG_NOTICE, "Would have called script %s with verb %s for interface %s\n", vr->state_script, verb, vr->vr_if->if_name);
 	return 0;
 }
 

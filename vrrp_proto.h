@@ -128,6 +128,7 @@ struct vrrp_vr {
 	char           *password;
 	char           *master_script;
 	char           *backup_script;
+	char           *state_script;
 	int	       *vridsdeps;
 	int		fault;
 	int		useIKE;

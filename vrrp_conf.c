@@ -287,6 +287,11 @@ vrrp_conf_lecture_fichier(struct vrrp_vr * vr, FILE * stream)
 				strncpy(vr->backup_script, arg, strlen(arg));
 				optok = 1;
 			}
+			if (!strcmp(option, "statescript")) {
+				vr->state_script = (char *)calloc(strlen(arg)+1, 1);
+				strncpy(vr->backup_script, arg, strlen(arg));
+				optok = 1;
+			}
 			if (! strcmp(option, "vridsdep")) {
 				temp = vrrp_conf_split_args(arg, ',');
 				i = 0;
