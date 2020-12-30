@@ -289,7 +289,7 @@ vrrp_conf_lecture_fichier(struct vrrp_vr * vr, FILE * stream)
 			}
 			if (!strcmp(option, "statescript")) {
 				vr->state_script = (char *)calloc(strlen(arg)+1, 1);
-				strncpy(vr->backup_script, arg, strlen(arg));
+				strncpy(vr->state_script, arg, strlen(arg));
 				optok = 1;
 			}
 			if (! strcmp(option, "vridsdep")) {
