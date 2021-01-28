@@ -39,3 +39,4 @@
 #include "vrrp_proto.h"
 #include "vrrp_functions.h"
 
+extern char **environ;

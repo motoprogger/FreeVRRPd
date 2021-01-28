@@ -99,7 +99,7 @@ vrrp_state_set_backup(struct vrrp_vr * vr)
 	int counter = 0;
 
 	vrrp_thread_mutex_lock();
-	vrrp_script_run(vr, VRRP_SCRIPT_VERB_STANDBY);
+	vrrp_script_run(vr, VRRP_SCRIPT_VERB_BACKUP);
 	vrrp_thread_mutex_lock_monitor();
 
 	/* Some NICs will reset (eg: bge/em) and wait some seconds before becoming carrier again */

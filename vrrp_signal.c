@@ -62,7 +62,7 @@ vrrp_signal_quit(int sig)
 	vrrp_thread_mutex_lock();
 	while (vr_ptr[cpt]) {
 		ethaddr = vrrp_list_get_first(vr_ptr[cpt]);
-		vrrp_script_run(vr_ptr[cpt], VRRP_SCRIPT_VERB_STANDBY);
+		vrrp_script_run(vr_ptr[cpt], VRRP_SCRIPT_VERB_BACKUP);
 		close(vr_ptr[cpt]->sd);
 		close(vr_ptr[cpt]->ioctl_sd);
 		cpt++;
