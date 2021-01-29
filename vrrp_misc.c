@@ -385,3 +385,37 @@ vrrp_misc_search_if_entry(char *name)
 
 	return NULL;
 }
+
+char*
+vrrp_misc_dltoa(const struct ether_addr *addr, char *buffer, size_t len)
+{
+	int retlen = snprintf(buffer, len, "%.2x:%.2x:%.2x:%.2x:%.2x:%.2x", addr->octet[0], addr->octet[1], addr->octet[2], addr->octet[3], addr->octet[4], addr->octet[5]);
+	if (retlen>=len) {
+		errno = ENOSPC;
+		return 0;
+	}
+	return buffer;
+}
+
+int
+vrrp_misc_atodl(const char *buffer, struct ether_addr *addr)
+{
+	char convbuf[3];
+	char *endptr;
+	int i;
+	for (i=0; i<6; i++) {
+		convbuf[0] = buffer[i*3];
+		convbuf[1] = buffer[i*3+1];
+		convbuf[2] = '\0';
+		if (i<5 && buffer[i*3+2]==':' || i==5 && buffer[i*3+2]=='\0') {
+			addr->octet[i] = (unsigned char) strtol(convbuf, &endptr, 16);
+		} else {
+			endptr = 0;
+		}
+		if (endptr!=convbuf+2) {
+			return EINVAL;
+		}
+	}
+	return 0;
+}
+

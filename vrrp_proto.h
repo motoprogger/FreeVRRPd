@@ -89,7 +89,6 @@ struct vrrp_if {
 struct vrrp_vip {
 	struct in_addr  addr;
 	u_char          owner;
-	char		*if_name;
 };
 
 /* Timers RFC2338-6.2 */
@@ -121,6 +120,7 @@ struct vrrp_vr {
 	u_char          auth_data[VRRP_AUTH_DATA_LEN];
 	struct vrrp_if *vr_if;
 	char		viface_name[IFNAMSIZ]; /* Real interface name for vrrp announces */
+	char		bridgeif_name[IFNAMSIZ]; /* Bridge interface name passed to script */
 	int		bridge_link_number;
 #ifdef ENABLE_VRRP_AH
 	struct ah_header *ahctx;

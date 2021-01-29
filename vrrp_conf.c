@@ -169,7 +169,6 @@ vrrp_conf_lecture_fichier(struct vrrp_vr * vr, FILE * stream)
 {
 	char            ligne[1024] = "#";
 	char          **temp;
-	char          **temp2;
 	char          **temp3;
 	char            option[1024], arg[1024];
 	int             i, j;
@@ -201,14 +200,7 @@ vrrp_conf_lecture_fichier(struct vrrp_vr * vr, FILE * stream)
 				vr->vr_netmask = (u_int *) calloc(i, sizeof(u_int) + 1);
 				i = 0;
 				while (temp[i] && (i < VRRP_CONF_MAX_ARGS)) {
-					temp2 = vrrp_conf_split_args(temp[i], ':');
-					if (temp2[1]) {
-						vr->vr_ip[i].if_name = (char *)calloc(IFNAMSIZ + 1, 1);
-						strncpy(vr->vr_ip[i].if_name, temp2[0], IFNAMSIZ);
-						temp3 = vrrp_conf_split_args(temp2[1], '/');
-					}
-					else
-						temp3 = vrrp_conf_split_args(temp2[0], '/');
+					temp3 = vrrp_conf_split_args(temp[i], '/');
 					j = 0;
 					while (temp3[j])
 						j++;
@@ -220,7 +212,6 @@ vrrp_conf_lecture_fichier(struct vrrp_vr * vr, FILE * stream)
 					vr->vr_netmask[i] = atoi(temp3[1]);
 					i++;
 					vrrp_conf_freeargs(temp3);
-					vrrp_conf_freeargs(temp2);
 				}
 				vr->cnt_ip = i;
 				vrrp_conf_freeargs(temp);
@@ -233,6 +224,10 @@ vrrp_conf_lecture_fichier(struct vrrp_vr * vr, FILE * stream)
 					strncpy(vr->vr_if->if_name, temp[0], sizeof(vr->vr_if->if_name));
 				}
 				vrrp_conf_freeargs(temp);
+				optok = 1;
+			}
+			if (!strcmp(option, "bridgeiface")) {
+				strncpy(vr->bridgeif_name, arg, sizeof(vr->bridgeif_name));
 				optok = 1;
 			}
 			if (!strcmp(option, "monitoredcircuits")) {

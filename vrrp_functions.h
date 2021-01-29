@@ -67,6 +67,8 @@ char            vrrp_misc_calcul_tmrelease(struct timeval *, struct timeval *);
 char            vrrp_misc_check_vrrp_packet(struct vrrp_vr *, char *, ssize_t);
 void            vrrp_misc_quit(int);
 struct vrrp_if *vrrp_misc_search_if_entry(char *);
+char           *vrrp_misc_dltoa(const struct ether_addr *, char *, size_t);
+int             vrrp_misc_atodl(const char *, struct ether_addr *);
 
 /* vrrp_conf.c functions */
 int             vrrp_conf_ident_option_arg(char *, char *, char *);

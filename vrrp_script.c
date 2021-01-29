@@ -40,6 +40,8 @@
 #include <sys/wait.h>
 #include <assert.h>
 #include <spawn.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include "vrrp_script.h"
 
 struct envvar {
@@ -179,17 +181,67 @@ execute_script(const char* script, const char* const* scriptargs, const struct e
 	}
 }
 
+static int
+format_ipaddrs(struct vrrp_vr *vr, char **result)
+{
+	size_t allocsize = vr->cnt_ip*20+2;
+	char *ifaddrs = (char*) malloc(allocsize);
+	if (!ifaddrs)
+		return ENOMEM;
+	char *cur = ifaddrs;
+	char *last = ifaddrs+allocsize/sizeof(char);
+	int i;
+	for (i=0; i<vr->cnt_ip; i++) {
+		assert(cur<last);
+		const char *res = inet_ntop(AF_INET, &(vr->vr_ip[i].addr.s_addr), cur, last-cur);
+		if (!res) {
+			int err = errno;
+			free(ifaddrs);
+			return err;
+		}
+		cur += strnlen(cur, last-cur);
+		assert(cur<last);
+		int count = snprintf(cur, last-cur, "/%u ", vr->vr_netmask[i]);
+		cur += count;
+		assert(cur<last);
+	}
+	cur--;
+	assert(cur<last);
+	*cur = '\0';
+	*result = ifaddrs;
+	return 0;
+}
+
 int
 vrrp_script_run(struct vrrp_vr * vr, const char* verb)
 {
 	if (vr->state_script) {
-		const char* args[] = { verb, vr->vr_if->if_name, 0 };
+		/* vr->vr_ip[i].addr.s_addr */
+		char *ifaddrs;
+		int res = format_ipaddrs(vr, &ifaddrs);
+		if (res) {
+			syslog(LOG_ERR, "Formatting arguments for script %s for interface %s failed with error %i\n", vr->state_script, vr->vr_if->if_name, res);
+			return res;
+		}
+		/* vr->bridgeif_name */
+		const struct envvar envs[] = {
+			{
+				"BRIDGEIF_NAME",
+				(const char*) vr->bridgeif_name
+			},
+			{
+				0,
+				0
+			}
+		};
+		const char* args[] = { verb, vr->vr_if->if_name, ifaddrs, 0 };
 		syslog(LOG_NOTICE, "Running script %s with verb %s for interface %s\n", vr->state_script, verb, vr->vr_if->if_name);
-		int res = execute_script(vr->state_script, args, 0);
+		res = execute_script(vr->state_script, args, envs);
 		if (res>=0)
 			syslog(LOG_NOTICE, "Script %s exited with status %i\n", vr->state_script, res);
 		else
 			syslog(LOG_NOTICE, "Running script %s failed with error %i\n", vr->state_script, -res);
+		free(ifaddrs);
 		return res;
 	}
 	return 0;

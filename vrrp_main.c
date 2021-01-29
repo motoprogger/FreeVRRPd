@@ -63,7 +63,6 @@ void
 vrrp_main_post_init(struct vrrp_vr * vr, int firstime)
 {
 	int             size = MAX_IP_ALIAS;
-
 	vr->ethaddr.octet[0] = 0x00;
 	vr->ethaddr.octet[1] = 0x00;
 	vr->ethaddr.octet[2] = 0x5E;
@@ -103,10 +102,17 @@ void
 vrrp_main_print_struct(struct vrrp_vr * vr)
 {
 	int             cpt;
-
+	char buffer[20];
+	char *res = vrrp_misc_dltoa(&(vr->ethaddr), buffer, sizeof(buffer));
+	if (!res) {
+		buffer[0] = 'E';
+		buffer[1] = 'R';
+		buffer[2] = 'R';
+		buffer[3] = '\0';
+	}
 	fprintf(stderr, "VServer ID\t\t: %u\n", vr->vr_id);
 	fprintf(stderr, "VServer PRIO\t\t: %u\n", vr->priority);
-	fprintf(stderr, "VServer ETHADDR\t\t: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n", vr->ethaddr.octet[0], vr->ethaddr.octet[1], vr->ethaddr.octet[2], vr->ethaddr.octet[3], vr->ethaddr.octet[4], vr->ethaddr.octet[5]);
+	fprintf(stderr, "VServer ETHADDR\t\t: %s\n", buffer);
 	fprintf(stderr, "VServer CNT_IP\t\t: %u\n", vr->cnt_ip);
 	fprintf(stderr, "VServer IPs\t\t:\n");
 	for (cpt = 0; cpt < vr->cnt_ip; cpt++)
