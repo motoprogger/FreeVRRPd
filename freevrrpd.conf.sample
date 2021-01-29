@@ -59,6 +59,10 @@ masterscript = /usr/local/bin/master_script.sh
 # too
 backupscript = /usr/local/bin/backup_script.sh
 
+# A state switch script is used to reconfigure change network configuration
+# into master or backup state
+statescript = /usr/local/etc/freevrrpd/stateswitch.sh
+
 # if physical interface attached to VRID 1 fail you can specify one or more
 # VRIDs that must go to backup state in the same time. (monitored circuits)
 # in this example if rl0 is faulty, xl0 and bge0 go to backup state mode
@@ -86,6 +90,15 @@ password = vrid1
 # the key with this option
 #presharedkey = blahblah
 
+# Bridge interface name passed to the state switch script. This name is not
+# used by FreeVRRPd itself in any way
+bridgeiface = bridge1
+
+# Backup Ethernet address passed to the state switch script. This address is not
+# used by FreeVRRPd itself in any way. It's intended for scripts that change
+# the interface's link-level address when switching to backup state.
+# backupethaddr = 00:00:00:00:00:00
+
 [VRID]
 # specify a second VRID number 2
 serverid = 2
@@ -93,10 +106,15 @@ interface = xl0
 # priority = 100 so it's a backup
 priority = 100
 addr = 192.168.1.2/32
+statescript = /usr/local/etc/freevrrpd/stateswitch.sh
 password = vrid2
+bridgeiface = bridge2
 [VRID]
 serverid = 3
 interface = bge0
 priority = 255
 addr = 192.168.2.2/32
+statescript = /usr/local/etc/freevrrpd/stateswitch.sh
 password = vrid3
+bridgeiface = bridge2
+bridgeiface = bridge3

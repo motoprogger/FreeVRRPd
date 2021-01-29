@@ -21,6 +21,7 @@ MAN8=	freevrrpd.8
 beforeinstall:
 	@echo "Installing files..."
 	install -c -o root -g wheel -m 644 freevrrpd.conf.sample /usr/local/etc
+	install -c -o root -g wheel -m 755 stateswitch.sh.sample /usr/local/etc/freevrrpd
 	install -c -o root -g wheel -m 755 freevrrpd.sh.sample /usr/local/etc/rc.d
 	@echo "#####################################################################"
 	@echo "# !! WARNING !! You must copy /usr/local/etc/vrrpd.conf.sample to   #"

@@ -12,7 +12,7 @@
  *    would be too onerous.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *      This product includes software developed by Sebastien Petit.
+ *      This product includes software developed by Dmitriy Kryuk.
  * 4. Neither the name of its contributors may be used to endorse or promote
  *    products derived from this software without specific prior written
  *    permission.
