@@ -341,6 +341,10 @@ vrrp_conf_lecture_fichier(struct vrrp_vr * vr, FILE * stream)
 				vr->monitoredCircuitsClearErrorsCount = atoi(arg);
 				optok = 1;
 			}
+			if (!strcmp(option, "backupethaddr")) {
+				int res = vrrp_misc_atodl(arg, &(vr->backupethaddr));
+				if (!res) optok = 1;
+			}
 			if (! optok)
 				syslog(LOG_ERR, "option '%s' unknown on configuration file, ignoring it", option);
 		}

@@ -69,6 +69,7 @@ vrrp_main_post_init(struct vrrp_vr * vr, int firstime)
 	vr->ethaddr.octet[3] = 0x00;
 	vr->ethaddr.octet[4] = 0x01;
 	vr->ethaddr.octet[5] = vr->vr_id;
+	memset(&(vr->backupethaddr), 0, sizeof(vr->backupethaddr));
 	vr->skew_time = (256 - vr->priority) / 256;
 	vr->master_down_int = (3 * vr->adv_int) + vr->skew_time;
 	if (firstime) {

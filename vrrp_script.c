@@ -232,6 +232,14 @@ vrrp_script_run(struct vrrp_vr * vr, const char* verb)
 			syslog(LOG_ERR, "Formatting hardware address for interface %s failed with error %i\n", vr->vr_if->if_name, dltoa_err);
 			return -dltoa_err;
 		}
+		char backupdladdr[20];
+		dltoares = vrrp_misc_dltoa(&(vr->backupethaddr), backupdladdr, sizeof(backupdladdr));
+		if (!dltoares) {
+			int dltoa_err = errno;
+			free(ifaddrs);
+			syslog(LOG_ERR, "Formatting backup hardware address for interface %s failed with error %i\n", vr->vr_if->if_name, dltoa_err);
+			return -dltoa_err;
+		}
 		const struct envvar envs[] = {
 			{
 				"BRIDGEIF_NAME",
@@ -240,6 +248,10 @@ vrrp_script_run(struct vrrp_vr * vr, const char* verb)
 			{
 				"BRIDGEIF_DLADDR",
 				dladdr
+			},
+			{
+				"BRIDGEIF_BACKUPDLADDR",
+				backupdladdr
 			},
 			{
 				0,

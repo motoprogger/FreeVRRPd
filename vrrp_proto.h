@@ -107,6 +107,7 @@ struct vrrp_vr {
 	int             sd;
 	int		ioctl_sd;			/* socket used to pass ioctl */
 	struct ether_addr ethaddr;
+	struct ether_addr backupethaddr;
 	u_char          cnt_ip;
 	struct vrrp_vip *vr_ip;
 	u_int          *vr_netmask;
