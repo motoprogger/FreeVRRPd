@@ -126,8 +126,15 @@ vrrp_main_print_struct(struct vrrp_vr * vr)
 	fprintf(stderr, "Server IPs\t\t:\n");
 	for (cpt = 0; cpt < vr->vr_if->nb_ip; cpt++)
 		fprintf(stderr, "\t%s\n", inet_ntoa(vr->vr_if->ip_addrs[cpt]));
-	fprintf(stderr, "Server ETHADDR\t\t: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n", vr->vr_if->ethaddr.octet[0], vr->vr_if->ethaddr.octet[1], vr->vr_if->ethaddr.octet[2], vr->vr_if->ethaddr.octet[3], vr->vr_if->ethaddr.octet[4], vr->vr_if->ethaddr.octet[5]);
-
+	fprintf(stderr, "VServer ID\t\t: %u\n", vr->vr_id);
+	res = vrrp_misc_dltoa(&(vr->vr_if->ethaddr), buffer, sizeof(buffer));
+	if (!res) {
+		buffer[0] = 'E';
+		buffer[1] = 'R';
+		buffer[2] = 'R';
+		buffer[3] = '\0';
+	}
+	fprintf(stderr, "Server ETHADDR\t\t: %s\n", buffer);
 	return;
 }
 

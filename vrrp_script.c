@@ -224,10 +224,22 @@ vrrp_script_run(struct vrrp_vr * vr, const char* verb)
 			return res;
 		}
 		/* vr->bridgeif_name */
+		char dladdr[20];
+		char *dltoares = vrrp_misc_dltoa(&(vr->ethaddr), dladdr, sizeof(dladdr));
+		if (!dltoares) {
+			int dltoa_err = errno;
+			free(ifaddrs);
+			syslog(LOG_ERR, "Formatting hardware address for interface %s failed with error %i\n", vr->vr_if->if_name, dltoa_err);
+			return -dltoa_err;
+		}
 		const struct envvar envs[] = {
 			{
 				"BRIDGEIF_NAME",
 				(const char*) vr->bridgeif_name
+			},
+			{
+				"BRIDGEIF_DLADDR",
+				dladdr
 			},
 			{
 				0,
