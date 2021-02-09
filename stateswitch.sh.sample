@@ -35,13 +35,13 @@
 
 case "$1" in
 backup)
-	ifconfig "$BRIDGE_IFNAME" destroy
+	ifconfig "$BRIDGEIF_NAME" destroy
 	;;
 master)
-	ifconfig "$BRIDGE_IFNAME" create
-	ifconfig "$BRIDGE_IFNAME" link "$BRIDGE_DLADDR"
-	ifconfig "$BRIDGE_IFNAME" inet "$3"
-	ifconfig "$BRIDGE_IFNAME" addm "$2"
+	ifconfig "$BRIDGEIF_NAME" create
+	ifconfig "$BRIDGEIF_NAME" link "$BRIDGEIF_DLADDR"
+	ifconfig "$BRIDGEIF_NAME" inet "$3"
+	ifconfig "$BRIDGEIF_NAME" addm "$2"
 	;;
 *)
 	exit 1
